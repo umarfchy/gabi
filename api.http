@@ -11,5 +11,14 @@ GET http://localhost:8080/products/1
 Content-Type: application/json
 
 ###
+PUT  http://localhost:8080/products/1
+Content-Type: application/json
+
+{
+    "name" : "a",
+    "description": "b"
+}
+
+###
 DELETE http://localhost:8080/products/1
 Content-Type: application/json
