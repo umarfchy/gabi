@@ -2,17 +2,17 @@ package main
 
 import (
 	"encoding/json"
-	"strconv"
 
 	"net/http"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/google/uuid"
 )
 
 type Product struct {
-	ID          int    `json:"id"`
+	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
@@ -22,7 +22,7 @@ func generateProduct(noOfItems int) []Product {
 
 	for i := 0; i < noOfItems; i++ {
 		_product := Product{
-			ID:          i,
+			ID:          uuid.New().String(),
 			Name:        gofakeit.ProductName(),
 			Description: gofakeit.ProductDescription(),
 		}
@@ -49,12 +49,7 @@ func main() {
 	}
 
 	getProductById := func(w http.ResponseWriter, r *http.Request) {
-		idParam := chi.URLParam(r, "id")
-		id, err := strconv.Atoi(idParam)
-
-		if err != nil {
-			http.Error(w, "Invalid prouduct ID", http.StatusBadRequest)
-		}
+		id := chi.URLParam(r, "id")
 
 		for _, product := range products {
 
@@ -80,10 +75,10 @@ func main() {
 			return
 		}
 
-		newProductIndex := products[len(products)-1].ID + 1
+		newProductId := uuid.New().String()
 
 		newProduct := Product{
-			ID:          newProductIndex,
+			ID:          newProductId,
 			Name:        newProductInfo.Name,
 			Description: newProductInfo.Description,
 		}
@@ -96,12 +91,7 @@ func main() {
 	}
 
 	updateProductById := func(w http.ResponseWriter, r *http.Request) {
-		idParam := chi.URLParam(r, "id")
-		id, err := strconv.Atoi(idParam)
-
-		if err != nil {
-			http.Error(w, "Invalid prouduct ID", http.StatusBadRequest)
-		}
+		id := chi.URLParam(r, "id")
 
 		var updatedProductInfo struct {
 			Name        string `json:"name"`
@@ -142,15 +132,9 @@ func main() {
 	}
 
 	deleteProductById := func(w http.ResponseWriter, r *http.Request) {
-		idParams := chi.URLParam(r, "id")
-		id, err := strconv.Atoi(idParams)
-
-		if err != nil {
-			http.Error(w, "Invalid prouduct ID", http.StatusBadRequest)
-		}
+		id := chi.URLParam(r, "id")
 
 		index := -1
-
 		for currentIdx, product := range products {
 			if product.ID == id {
 				index = currentIdx
@@ -163,7 +147,7 @@ func main() {
 		}
 
 		products = append(products[:index], products[index+1:]...)
-		w.Write([]byte("deleted product with id " + idParams))
+		w.Write([]byte("deleted product with id " + id))
 	}
 
 	r.Get("/", getHelloWorld)

@@ -7,7 +7,7 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:8080/products/1
+GET http://localhost:8080/products/ed9f9bf7-e20d-4465-9d1c-bb1e08cf1399
 Content-Type: application/json
 
 ###
