@@ -8,10 +8,6 @@ import (
 	"net/http"
 )
 
-// {
-// 	"products":
-// }
-
 type Product struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -56,7 +52,7 @@ func main() {
 	}
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello"))
+		w.Write([]byte("hello wrold"))
 	})
 
 	r.Get("/products", func(w http.ResponseWriter, r *http.Request) {
