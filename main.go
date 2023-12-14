@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"strconv"
+
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"net/http"
 )
 
 type Product struct {
@@ -59,6 +61,25 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 
 		json.NewEncoder(w).Encode(products)
+
+	})
+
+	r.Get("/products/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idParam := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idParam)
+
+		if err != nil {
+			http.Error(w, "Invalid prouduct ID", http.StatusBadRequest)
+		}
+
+		for _, product := range products {
+
+			if product.ID == id {
+				json.NewEncoder(w).Encode(product)
+				return
+			}
+
+		}
 
 	})
 
