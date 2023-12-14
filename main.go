@@ -8,7 +8,7 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/google/uuid"
+	"github.com/lucsky/cuid"
 )
 
 type Product struct {
@@ -22,7 +22,7 @@ func generateProduct(noOfItems int) []Product {
 
 	for i := 0; i < noOfItems; i++ {
 		_product := Product{
-			ID:          uuid.New().String(),
+			ID:          cuid.New(),
 			Name:        gofakeit.ProductName(),
 			Description: gofakeit.ProductDescription(),
 		}
@@ -75,8 +75,7 @@ func main() {
 			return
 		}
 
-		newProductId := uuid.New().String()
-
+		newProductId := cuid.New()
 		newProduct := Product{
 			ID:          newProductId,
 			Name:        newProductInfo.Name,
