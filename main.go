@@ -81,6 +81,32 @@ func main() {
 
 		}
 
+		http.Error(w, "Product not found", http.StatusNotFound)
+	})
+
+	r.Delete("/products/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idParams := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idParams)
+
+		if err != nil {
+			http.Error(w, "Invalid prouduct ID", http.StatusBadRequest)
+		}
+
+		index := -1
+
+		for currentIdx, product := range products {
+			if product.ID == id {
+				index = currentIdx
+				break
+			}
+		}
+
+		if index < 0 {
+			http.Error(w, "product not found", http.StatusNotFound)
+		}
+
+		products = append(products[:index], products[index+1:]...)
+		w.Write([]byte("deleted product with id " + idParams))
 	})
 
 	http.ListenAndServe(":8080", r)
