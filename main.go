@@ -82,6 +82,33 @@ func main() {
 		http.Error(w, "Product not found", http.StatusNotFound)
 	}
 
+	createProductById := func(w http.ResponseWriter, r *http.Request) {
+
+		var newProductInfo struct {
+			Name        string `json:"name"`
+			Description string `json:"description"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&newProductInfo); err != nil {
+			http.Error(w, "Unable to parse body.", http.StatusBadRequest)
+			return
+		}
+
+		newProductIndex := products[len(products)-1].ID + 1
+
+		newProduct := Product{
+			ID:          newProductIndex,
+			Name:        newProductInfo.Name,
+			Description: newProductInfo.Description,
+		}
+
+		products = append(products, newProduct)
+
+		w.Write([]byte("hey, the product is added. Cheers!!!"))
+
+		http.Error(w, "Product not found", http.StatusNotFound)
+	}
+
 	updateProductById := func(w http.ResponseWriter, r *http.Request) {
 		idParam := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idParam)
@@ -108,6 +135,10 @@ func main() {
 				break
 			}
 
+		}
+
+		if index < 0 {
+			http.Error(w, "Unable to find the product.", http.StatusBadRequest)
 		}
 
 		newProduct := Product{
@@ -152,6 +183,7 @@ func main() {
 	r.Get("/", getHelloWorld)
 	r.Get("/products", getAllProducts)
 	r.Get("/products/{id}", getProductById)
+	r.Post("/products/", createProductById)
 	r.Put("/products/{id}", updateProductById)
 	r.Delete("/products/{id}", deleteProductById)
 	http.ListenAndServe(":8080", r)
