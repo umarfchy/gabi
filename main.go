@@ -53,18 +53,16 @@ func main() {
 		},
 	}
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	getHelloWorld := func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello wrold"))
-	})
+	}
 
-	r.Get("/products", func(w http.ResponseWriter, r *http.Request) {
+	getAllProducts := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-
 		json.NewEncoder(w).Encode(products)
+	}
 
-	})
-
-	r.Get("/products/{id}", func(w http.ResponseWriter, r *http.Request) {
+	getProductById := func(w http.ResponseWriter, r *http.Request) {
 		idParam := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idParam)
 
@@ -82,9 +80,9 @@ func main() {
 		}
 
 		http.Error(w, "Product not found", http.StatusNotFound)
-	})
+	}
 
-	r.Delete("/products/{id}", func(w http.ResponseWriter, r *http.Request) {
+	deleteProductById := func(w http.ResponseWriter, r *http.Request) {
 		idParams := chi.URLParam(r, "id")
 		id, err := strconv.Atoi(idParams)
 
@@ -107,7 +105,11 @@ func main() {
 
 		products = append(products[:index], products[index+1:]...)
 		w.Write([]byte("deleted product with id " + idParams))
-	})
+	}
 
+	r.Get("/", getHelloWorld)
+	r.Get("/products", getAllProducts)
+	r.Get("/products/{id}", getProductById)
+	r.Delete("/products/{id}", deleteProductById)
 	http.ListenAndServe(":8080", r)
 }
